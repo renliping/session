@@ -14,8 +14,8 @@ public class DeliverySession implements Serializable {
     private ActionType Action;
     private String TMGIPool;
     private String TMGI;
-    private int startTime;
-    private int stopTime;
+    private long startTime;
+    private long stopTime;
     private String version;
     DeliverySession(int deliverySessionId,ActionType actionType,String TMGIPool,String TMGI,
                     int startTime,int stopTime,String version){

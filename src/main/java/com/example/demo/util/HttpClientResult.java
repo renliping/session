@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import com.alibaba.fastjson.JSONObject;
+import lombok.Data;
 
+@Data
 public class HttpClientResult implements Serializable {
 
     /**
@@ -34,4 +36,6 @@ public class HttpClientResult implements Serializable {
     public JSONObject getResult(){
         return JSONObject.parseObject(content);
     }
+
+
 }

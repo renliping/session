@@ -4,18 +4,17 @@ import com.example.demo.entity.ActionType;
 import com.example.demo.entity.DeliverySession;
 import com.example.demo.util.HttpClient;
 import com.example.demo.util.HttpClientResult;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+@Slf4j
 public class SessionController implements Serializable {
 
     //服务器地址
@@ -29,8 +28,9 @@ public class SessionController implements Serializable {
      * @param deliverySession
      */
     public void doBaseSeesion(DeliverySession deliverySession) throws Exception {
+              log.info("session request send,{}",deliverySession);
               HashMap<String,String> map = new HashMap<>(8);
-              map.put("DeliverySessionId",deliverySession.getDeliverySessionId().toString());
+              map.put("DeliverySessionId",String.valueOf(deliverySession.getDeliverySessionId()));
               map.put("Action",deliverySession.getAction().getState().toString());
 
               //二选一
@@ -45,12 +45,12 @@ public class SessionController implements Serializable {
                   if(deliverySession.getStartTime() < 0){
                       throw new Exception("startTime not allowed little thanner 0");
                   }
-                  map.put("StartTime",deliverySession.getStartTime().toString());
+                  map.put("StartTime",String.valueOf(deliverySession.getStartTime()));
               }else{
                   if(deliverySession.getStopTime() < 0){
                       throw new Exception("stopTime not allowed little thanner 0");
                   }
-                  map.put("EndTime",deliverySession.getStopTime().toString());
+                  map.put("StopTime",String.valueOf(deliverySession.getStopTime()));
               }
 
               HttpClientResult httpClientResult =HttpClient.doPost(URL_PREFIX+deliverySession.getDeliverySessionId(),null,
@@ -105,9 +105,9 @@ public class SessionController implements Serializable {
         Thread.sleep(millsec);
         deliverySession.setAction(ActionType.STOP);
         Calendar canlendar = Calendar.getInstance();
-        canlendar.setTime(deliverySession.getStartTime());
+        canlendar.setTime(new Date(deliverySession.getStartTime()));
         canlendar.add(Calendar.MILLISECOND, millsec);
-        deliverySession.setStopTime(canlendar.getTime());
+        deliverySession.setStopTime(canlendar.getTimeInMillis());
         try {
             //发送stop请求
             doBaseSeesion(deliverySession);
